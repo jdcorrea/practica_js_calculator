@@ -22,6 +22,7 @@ document.querySelectorAll(".button-key").forEach(item => {
     if (equalKeyActive && prevKeyisNan) {
       switch (operator) {
         case 'plus':
+          //debugger
           numberOnMemory = sumNumbers(numberOnMemory, numberOnScreen);
           break;
         case 'minus':
@@ -34,7 +35,11 @@ document.querySelectorAll(".button-key").forEach(item => {
           numberOnMemory = divideNumbers(numberOnMemory, numberOnScreen);
           break;
         }
-      screenResult.textContent = numberOnMemory;
+      if(isNaN(numberOnMemory)) {
+        screenOperator.textContent = 'Math.Error';
+        screenResult.textContent = NaN;
+      }
+      screenResult.textContent = numberOnMemory.toFixed(2);
     }
   })
 });
@@ -97,10 +102,6 @@ function cleanVariables() {
   screenResult.textContent = '0';
 }
 
-function executeCalculatorFunction(operator) {
-
-}
-
 function sumNumbers(number1, number2) {
   return number1 + number2;
 }
@@ -114,5 +115,5 @@ function multiplyNumbers(number1, number2) {
 }
 
 function divideNumbers(number1, number2) {
-  return number2 = 0 ? 'NaN' : number1 / number2;
+  return number2 == 0 ? 'NaN' : number1 / number2;
 }
