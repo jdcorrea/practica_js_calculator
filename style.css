@@ -30,8 +30,9 @@ body {
   justify-content: space-between;
   width: 80%;
   min-width: 250px;
-  height: 70vh;
-  min-height: 30vh;
+  max-width: 900px;
+  height: 70%;
+  min-height: 400px;
   background-color: var(--dark-gray);
   border-radius: 5px;
 }
@@ -55,7 +56,11 @@ body {
   align-items: center;
   height: 50%;
   font-size: 4rem;
-  padding-right: 5%;
+  padding-right: 2px;
+}
+
+#operator {
+  font-size: 1.8rem;
 }
 
 .calculator-keys {
@@ -100,15 +105,4 @@ body {
 
 .button-clear {
   width: 100%;
-}
-
-@media (min-width: 320px) {
-  .display p {
-    font-size: 2.5rem;
-  }
-}
-@media (min-width: 600px) {
-  .display p {
-    font-size: 4rem;
-  }
 }

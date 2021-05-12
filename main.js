@@ -1,5 +1,5 @@
 //Variable declarations
-
+const MINIMUM_FONTSIZE = 10;
 let numberOnScreen = 0;
 let numberOnMemory = 0;
 let prevKeyisNan = true;
@@ -17,12 +17,10 @@ screenResult.textContent = 0;
 document.querySelectorAll(".button-key").forEach(item => {
   item.addEventListener('click', event => {
     const buttonPressed = item.innerHTML;
-    //debugger
     actionByUser(buttonPressed);
     if (equalKeyActive && prevKeyisNan) {
       switch (operator) {
         case 'plus':
-          //debugger
           numberOnMemory = sumNumbers(numberOnMemory, numberOnScreen);
           break;
         case 'minus':
@@ -34,19 +32,26 @@ document.querySelectorAll(".button-key").forEach(item => {
         case 'divide':
           numberOnMemory = divideNumbers(numberOnMemory, numberOnScreen);
           break;
-        }
-      if(isNaN(numberOnMemory)) {
+      }
+      if (isNaN(numberOnMemory)) {
         screenOperator.textContent = 'Math.Error';
         screenResult.textContent = NaN;
+        numberOnMemory = 0;
+      } else {
+        screenResult.textContent = numberOnMemory.toFixed(2);
+        changeFontBasedOnLength(screenResult.textContent.length);
       }
-      screenResult.textContent = numberOnMemory.toFixed(2);
     }
   })
 });
 
+window.addEventListener('resize', function(event) {
+  screenResult.style.fontSize = '4rem';
+  changeFontBasedOnLength(screenResult.textContent.length)});
+
 //Functions
 function actionByUser(buttonPressed) {
-  
+
   if (isNaN(buttonPressed)) {
     prevKeyisNan = true;
     equalKeyActive = false;
@@ -56,8 +61,13 @@ function actionByUser(buttonPressed) {
     prevKeyisNan = false;
     equalKeyActive = false;
     screenOperator.textContent = '';
-    stringNumberbyUser += buttonPressed;
-    screenResult.textContent = stringNumberbyUser;
+    if (stringNumberbyUser.length <= 24) {
+      stringNumberbyUser += buttonPressed;
+      screenResult.textContent = stringNumberbyUser;
+      changeFontBasedOnLength(screenResult.textContent.length);
+    } else {
+      screenOperator.textContent = 'Max number reached';
+    }
   }
 }
 
@@ -100,6 +110,32 @@ function cleanVariables() {
   stringNumberbyUser = 0;
   screenOperator.textContent = '';
   screenResult.textContent = '0';
+  screenResult.style.fontSize = '4rem';
+}
+
+function changeFontBasedOnLength(lengthToCalculate) {
+  let screenWidthToUse = screenResult.clientWidth;
+  let fontSizeActive = 0;
+  let screenResultUsed = 0;
+
+  fontSizeActive =parseFloat(
+      window.getComputedStyle(
+      screenResult, null).getPropertyValue('font-size'));
+  
+  if (fontSizeActive <= MINIMUM_FONTSIZE ) {
+    return;
+  }
+
+  console.log(fontSizeActive);
+  screenResultUsed = (lengthToCalculate * fontSizeActive);
+
+  if (screenResultUsed >= screenWidthToUse) {
+    let fontSizeToUse = (fontSizeActive - 0.01) > MINIMUM_FONTSIZE
+                      ? (fontSizeActive/10) - 0.01
+                      : MINIMUM_FONTSIZE / 10;
+    screenResult.style.fontSize = fontSizeToUse + 'rem';
+    changeFontBasedOnLength(lengthToCalculate);
+  }
 }
 
 function sumNumbers(number1, number2) {
