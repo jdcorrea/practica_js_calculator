@@ -16,37 +16,59 @@
     <section class="calculator" id="calculator">
       <section class="calculator-screen">
         <div class="display">
-          <p id="operator"></p>
-          <p id="operation-result"></p>
+          <div class="operator-content">
+            <p id="operator"></p>
+          </div>
+          <div class="operation-content">
+            <p id="operation-result">0</p>
+          </div>
         </div>
       </section>
       <section class="calculator-keys">
         <div class="simple-keys">
           <div class="row">
-            <button class="button-key">7</button>
-            <button class="button-key">8</button>
-            <button class="button-key">9</button>
-            <button class="button-key divide">&divide;</button>
+            <button class="button-key" onclick="numberByUser(7)">7</button>
+            <button class="button-key" onclick="numberByUser(8)">8</button>
+            <button class="button-key" onclick="numberByUser(9)">9</button>
+            <button class="button-key divide" onclick="checkOperation('/')">
+              &divide;
+            </button>
           </div>
           <div class="row">
-            <button class="button-key">4</button>
-            <button class="button-key">5</button>
-            <button class="button-key">6</button>
-            <button class="button-key multiply">&times;</button>
+            <button class="button-key" onclick="numberByUser(4)">4</button>
+            <button class="button-key" onclick="numberByUser(5)">5</button>
+            <button class="button-key" onclick="numberByUser(6)">6</button>
+            <button class="button-key multiply" onclick="checkOperation('*')">
+              &times;
+            </button>
           </div>
           <div class="row">
-            <button class="button-key">1</button>
-            <button class="button-key">2</button>
-            <button class="button-key">3</button>
-            <button class="button-key minus">&minus;</button>
+            <button class="button-key" onclick="numberByUser(1)">1</button>
+            <button class="button-key" onclick="numberByUser(2)">2</button>
+            <button class="button-key" onclick="numberByUser(3)">3</button>
+            <button class="button-key minus" onclick="checkOperation('-')">
+              &minus;
+            </button>
           </div>
           <div class="row">
-            <button class="button-key">0</button>
-            <button class="button-key button-equal">&equals;</button>
-            <button class="button-key plus">&plus;</button>
+            <button class="button-key" onclick="numberByUser(0)">0</button>
+            <button
+              class="button-key button-equal"
+              onclick="equalOperation()"
+            >
+              &equals;
+            </button>
+            <button class="button-key plus" onclick="checkOperation('+')">
+              &plus;
+            </button>
           </div>
           <div class="row">
-            <button class="button-key button-clear">CE</button>
+            <button
+              class="button-key button-clear"
+              onclick="cleanScreenInputs()"
+            >
+              CE
+            </button>
           </div>
         </div>
       </section>

@@ -1,143 +1,143 @@
 //Variable declarations
-const MINIMUM_FONTSIZE = 10;
-let numberOnScreen = 0;
 let numberOnMemory = 0;
-let prevKeyisNan = true;
-let equalKeyActive = false;
-let resultValue = 0;
+let numberOnScreen = 0;
 let stringNumberbyUser = '';
+let numberOnMemoryActive = false;
+let numberOnScreenActive = false;
+let previousKeyIsOperator = false;
+let onErrorExecution = false;
 let operator = '';
+let operatorOnMemory = '';
 let screenOperator = document.getElementById('operator');
 let screenResult = document.getElementById('operation-result');
 
-//Load inicialization values
-screenResult.textContent = 0;
-
-//Clic listener for keys and assignation of temp values
-document.querySelectorAll(".button-key").forEach(item => {
-  item.addEventListener('click', event => {
-    const buttonPressed = item.innerHTML;
-    actionByUser(buttonPressed);
-    if (equalKeyActive && prevKeyisNan) {
-      switch (operator) {
-        case 'plus':
-          numberOnMemory = sumNumbers(numberOnMemory, numberOnScreen);
-          break;
-        case 'minus':
-          numberOnMemory = substractNumbers(numberOnMemory, numberOnScreen);
-          break;
-        case 'multiply':
-          numberOnMemory = multiplyNumbers(numberOnMemory, numberOnScreen);
-          break;
-        case 'divide':
-          numberOnMemory = divideNumbers(numberOnMemory, numberOnScreen);
-          break;
-      }
-      if (isNaN(numberOnMemory)) {
-        screenOperator.textContent = 'Math.Error';
-        screenResult.textContent = NaN;
-        numberOnMemory = 0;
-      } else {
-        screenResult.textContent = numberOnMemory.toFixed(2);
-        changeFontBasedOnLength(screenResult.textContent.length);
-      }
-    }
-  })
-});
-
-window.addEventListener('resize', function(event) {
-  screenResult.style.fontSize = '4rem';
-  changeFontBasedOnLength(screenResult.textContent.length)});
+// screenOperator.textContent = '';
 
 //Functions
-function actionByUser(buttonPressed) {
+function checkOperation(operation) {
+  validateOnErrorExecution();
+  screenOperator.textContent = operation;
+  resultOnMemoryOrScreen();
 
-  if (isNaN(buttonPressed)) {
-    prevKeyisNan = true;
-    equalKeyActive = false;
-    checkOperation(buttonPressed);
-  }
-  else {
-    prevKeyisNan = false;
-    equalKeyActive = false;
-    screenOperator.textContent = '';
-    if (stringNumberbyUser.length <= 24) {
-      stringNumberbyUser += buttonPressed;
-      screenResult.textContent = stringNumberbyUser;
-      changeFontBasedOnLength(screenResult.textContent.length);
-    } else {
-      screenOperator.textContent = 'Max number reached';
-    }
-  }
-}
-
-function checkOperation(buttonPressed) {
-  screenOperator.textContent = buttonPressed;
-
-  switch (buttonPressed) {
+  switch (operation) {
     case '+':
       operator = 'plus';
       break;
-    case '−':
+    case '-':
       operator = 'minus';
       break;
-    case '×':
-      //debugger;
+    case '*':
       operator = 'multiply';
       break;
-    case '÷':
+    case '/':
       operator = 'divide';
       break;
-    case '=':
-      equalKeyActive = true;
-      break;
-    case 'CE':
-      cleanVariables();
   }
+
+  if (numberOnScreenActive) {
+    executeOperation(operatorOnMemory);
+  }
+  operatorOnMemory = operator;
+  stringNumberbyUser = '';
+}
+
+function cleanScreenInputs() {
+  numberOnScreen = 0;
+  numberOnMemory = 0;
+  stringNumberbyUser = '';
+  screenOperator.textContent = '';
+  screenResult.textContent = '0';
+  numberOnScreenActive = false;
+  numberOnMemoryActive = false;
+}
+
+function equalOperation() {
+  resultOnMemoryOrScreen();
+  executeOperation(operatorOnMemory);
+}
+
+function executeOperation(operation, numberOnScreenActived) {
+  switch (operation) {
+    case 'plus':
+      numberOnMemory = sumNumbers(numberOnMemory, numberOnScreen);
+      break;
+    case 'minus':
+      numberOnMemory = substractNumbers(numberOnMemory, numberOnScreen);
+      break;
+    case 'multiply':
+      numberOnMemory = multiplyNumbers(numberOnMemory, numberOnScreen);
+      break;
+    case 'divide':
+      numberOnMemory = divideNumbers(numberOnMemory, numberOnScreen);
+      break;
+  }
+
+  if (isNaN(numberOnMemory)) {
+    screenOperator.textContent = 'Math.Error';
+    screenResult.textContent = NaN;
+    onErrorExecution = true;
+  } else {
+    screenResult.textContent = numberOnMemory.toFixed(2);
+  }
+
+  numberOnScreenActive = false;
+}
+
+function numberByUser(buttonPressedByUser) {
+  previousKeyIsOperator = false;
+  validateOnErrorExecution();
+  
+  if (validateMaxNumberByUser()) {
+    printNumberOnScreen(buttonPressedByUser);
+  } else {
+    const MAX_NUMBER_REACHED = 'Max number reached';
+    screenOperator.textContent = MAX_NUMBER_REACHED;
+  }
+  
+  screenResult.scrollLeft = screenResult.scrollWidth;
+}
+
+
+function printNumberOnScreen(numberPressed) {
+  if (stringNumberbyUser == '0') {
+    stringNumberbyUser = numberPressed;
+  } else {
+    stringNumberbyUser += '' + numberPressed;
+  }
+  screenResult.textContent = stringNumberbyUser;
+}
+
+function resultOnMemoryOrScreen() {
   if (stringNumberbyUser != '') {
-    if (numberOnMemory !== 0) {
+    if (numberOnMemoryActive) {
       numberOnScreen = parseFloat(stringNumberbyUser);
+      numberOnScreenActive = true;
     } else {
       numberOnMemory = parseFloat(stringNumberbyUser);
+      numberOnScreenActive = false;
+      numberOnMemoryActive = true;
     }
   }
   stringNumberbyUser = '';
 }
 
-function cleanVariables() {
-  numberOnScreen = 0;
-  numberOnMemory = 0;
-  stringNumberbyUser = 0;
-  screenOperator.textContent = '';
-  screenResult.textContent = '0';
-  screenResult.style.fontSize = '4rem';
-}
-
-function changeFontBasedOnLength(lengthToCalculate) {
-  let screenWidthToUse = screenResult.clientWidth;
-  let fontSizeActive = 0;
-  let screenResultUsed = 0;
-
-  fontSizeActive =parseFloat(
-      window.getComputedStyle(
-      screenResult, null).getPropertyValue('font-size'));
+function validateMaxNumberByUser() {
+  const MAX_NUMBER_ALLOWED_BY_USER = 24;
   
-  if (fontSizeActive <= MINIMUM_FONTSIZE ) {
-    return;
-  }
-
-  console.log(fontSizeActive);
-  screenResultUsed = (lengthToCalculate * fontSizeActive);
-
-  if (screenResultUsed >= screenWidthToUse) {
-    let fontSizeToUse = (fontSizeActive - 0.01) > MINIMUM_FONTSIZE
-                      ? (fontSizeActive/10) - 0.01
-                      : MINIMUM_FONTSIZE / 10;
-    screenResult.style.fontSize = fontSizeToUse + 'rem';
-    changeFontBasedOnLength(lengthToCalculate);
+  if (stringNumberbyUser.length <= MAX_NUMBER_ALLOWED_BY_USER) {
+    return true;
+  } else {
+    return false;
   }
 }
 
+function validateOnErrorExecution() {
+  if (onErrorExecution) {
+    cleanScreenInputs();
+    onErrorExecution = false;
+  }
+}
+//Math functions available for calculator
 function sumNumbers(number1, number2) {
   return number1 + number2;
 }
@@ -151,5 +151,8 @@ function multiplyNumbers(number1, number2) {
 }
 
 function divideNumbers(number1, number2) {
-  return number2 == 0 ? 'NaN' : number1 / number2;
+  if (number2 === 0) {
+    return 'NaN';
+  }
+  return number1 / number2;
 }
